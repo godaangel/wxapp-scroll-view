@@ -2,6 +2,7 @@
 > 不敢说最好，但是感觉也应该是性能和体验靠前的下拉刷新扩展了，老规矩，代码片段放最后了~
 ## 原理
 其实原理很简单，和普通H5以及市面上有的下拉刷新没有特别大的区别，都是基于`touch`手势检测事件来实现下拉刷新的。`touchstart`的时候记录当前触摸点，`touchmove`的时候开始计算移动方向和移动距离, `touchend`的时候计算是否要进行下拉刷新操作。如图所示：
+![](/assets/index.jpg)
 
 ## 实现方法
 调研了一些实现方法，目前大部分都是通过js计算，然后setData来改变元素的`transform`值实现下拉刷新。考虑到性能问题，此处使用了`wxs`的响应式能力来实现整个计算逻辑，不用通过逻辑层和视图层通信，直接在视图层进行渲染。具体文档请参考[wxs响应事件](https://developers.weixin.qq.com/miniprogram/dev/framework/view/interactive-animation.html)。  
