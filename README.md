@@ -64,4 +64,4 @@ module.exports = {
 ## 干货
 最后，上代码片段， [小程序代码片段](https://developers.weixin.qq.com/s/POCnzymR7ndV)  
 
-[github地址](https://developers.weixin.qq.com/s/POCnzymR7ndV)
+[github地址](https://github.com/godaangel/wxapp-scroll-view.git)
