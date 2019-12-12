@@ -1,0 +1,186 @@
+//用于list组件下拉刷新的绘制，提高性能
+
+var moveStartPosition = 0     //开始位置
+var moveDistance = 0          //移动距离
+
+var moveRefreshDistance = 60  //达到刷新的阈值
+var moveMaxDistance = 100     //最大可滑动距离
+var isRefreshMaxDown = false  //是否达到了最大距离， 用来判断是否要震动提示
+
+var loading = false           //是否正在loading
+
+/**
+ * 触摸事件开始
+ * @param e 
+ * @param ins 
+ */
+var touchStart = function (e, ins) {
+  if (loading) {
+    return false
+  }
+  moveDistance = 0 //重置移动距离
+  moveStartPosition = e.touches[0].clientY //记录开始移动的位置
+}
+
+/**
+ * 触摸事件移动
+ * @param e 
+ * @param ins 
+ */
+var touchMove = function (e, ins) {
+  //如果正在loading，则不进行接下来的行为
+  if (loading) {
+    return false
+  }
+
+  //开始计算移动距离
+  moveDistance = (e.touches[0].clientY - moveStartPosition)
+  // console.log(moveDistance)
+  //如果是往下滑动，则阻止接下来的行为
+  if (moveDistance <= 0) {
+    return false
+  }
+
+  if (moveDistance >= moveMaxDistance) {
+    //达到阈值
+    ins.selectComponent('.refresh-container').setStyle({
+      transform: 'scale(1) translateY(-100%)',
+    })
+    moveDistance = moveMaxDistance
+
+    //触发一次震动
+    if (!isRefreshMaxDown) {
+      ins.callMethod('refreshMaxDown')
+      isRefreshMaxDown = true
+    }
+  } else {
+    var scale = (moveDistance / 100) > 1 ? 1 : (moveDistance / 100)
+    ins.selectComponent('.refresh-container').setStyle({
+      transform: 'scale(' + scale + ') translateY(-100%)',
+    })
+  }
+
+  //设定每次滚动位置
+  ins.selectComponent('.list-container').setStyle({
+    transform: 'translateY(' + moveDistance + 'px)'
+  })
+
+  return false
+}
+
+/**
+ * 结束触摸事件
+ */
+var touchEnd = function (e, ins) {
+  if (loading) {
+    return false
+  }
+  //如果是往下滑动，则阻止接下来的行为
+  if (moveDistance <= 0) {
+    return false
+  }
+
+  if (moveDistance < moveRefreshDistance) {
+    // 移动距离小于刷新阈值，不进行刷新
+    ins.selectComponent('.refresh-container').setStyle({
+      transform: 'scale(0) translateY(100%)',
+    })
+    ins.callMethod('refreshCancel')
+  } else {
+    // 开始刷新
+    loading = true
+    ins.callMethod('refreshStart')
+  }
+
+  //重置
+  moveStartPosition = 0
+  isRefreshMaxDown = false
+}
+
+/**
+ * 请求状态变化监听，监听刷新请求开始和请求完成
+ * @param newValue 
+ * @param oldValue 
+ * @param ownerInstance 
+ * @param ins 
+ */
+var loadingTypeChange = function (newValue, oldValue, ownerInstance, ins) {
+  if (newValue === false) {
+    // 刷新完成，则绘制动画回到顶部
+    drawTransitionY(ownerInstance, '.list-container', 300, Math.min(moveRefreshDistance, moveDistance), 0)
+    loading = false
+  } else {
+    ownerInstance.selectComponent('.refresh-container').setStyle({
+      transform: 'scale(1) translateY(-100%)',
+    })
+    //刷新开始，从当前位置划到刷新阈值位置
+    drawTransitionY(ownerInstance, '.list-container', 300, moveDistance, moveRefreshDistance)
+  }
+}
+
+/**
+ * 主动触发刷新操作，比如点击页面上一个按钮，重新刷新list，这就需要用到这个方法
+ * @param newValue 
+ * @param oldValue 
+ * @param ownerInstance 
+ * @param ins 
+ */
+var triggerRefresh = function (newValue, oldValue, ownerInstance, ins) {
+  if (newValue === false) {
+    // 不做任何操作
+  } else {
+    // 通过点击主动触发刷新，则从刷新阈值开始进行动画
+    moveDistance = moveRefreshDistance
+
+    //绘制loading类型
+    ownerInstance.selectComponent('.refresh-container').setStyle({
+      transform: 'scale(1) translateY(-100%)',
+    })
+    drawTransitionY(ownerInstance, '.list-container', 300, 0, moveDistance)
+    
+    //延迟更新，主要是为了动画效果执行完再操作
+    ownerInstance.callMethod('refreshStart', {
+      setTimeout: 300
+    })
+    loading = true
+  }
+}
+
+/**
+ * 绘制动画，因为ios 12 对于transform动画支持的不好
+ * @param ins 当前实例
+ * @param component 需要绘制动画的类名
+ * @param time 动画时间
+ * @param start 开始位置
+ * @param end 结束位置
+ */
+var drawTransitionY = function (ins, component, time, start, end) {
+  var preDis = (end - start) / (time / 16.7)
+  var i = 0
+  var maxLength = Math.round(time / 16.7)
+  function animation() {
+    if (i <= maxLength) {
+      ins.requestAnimationFrame(function () {
+        var scrollY = start + (i) * preDis
+        ins.selectComponent(component).setStyle({
+          transform: 'translateY(' + scrollY + 'px)'
+        })
+        i++
+        animation()
+      })
+    } else {
+      ins.selectComponent(component).setStyle({
+        transform: 'translateY(' + end + 'px)',
+      })
+    }
+  }
+  animation()
+}
+
+module.exports = {
+  touchMove: touchMove,
+  touchStart: touchStart,
+  touchEnd: touchEnd,
+  loadingTypeChange: loadingTypeChange,
+  triggerRefresh: triggerRefresh
+}

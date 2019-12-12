@@ -1,0 +1,25 @@
+<scroll-view 
+  class="list-class" 
+  scroll-y="{{true}}"
+  lower-threshold="{{lowerThreshold}}" 
+  bindtouchstart="{{scroll.touchStart}}" 
+  bindtouchmove="{{scroll.touchMove}}" 
+  bindtouchend="{{scroll.touchEnd}}" 
+  bindscrolltolower="loadmore">
+  <view class="list-container" 
+    change:prop="{{scroll.loadingTypeChange}}" 
+    prop="{{showRefresh}}">
+    <view class="refresh-container" 
+      change:prop="{{scroll.triggerRefresh}}" 
+      prop="{{forceRefresh}}">
+      <view class="refresh-dot"></view>
+      <view class="refresh-dot"></view>
+      <view class="refresh-dot"></view>
+    </view>
+    <slot></slot>
+    <view class="gap-text" wx:if="{{loading}}">
+      <view class="word">加载中...</view>
+    </view>
+  </view>
+</scroll-view>
+<wxs src="./scroll.wxs" module="scroll"></wxs>

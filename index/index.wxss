@@ -1,0 +1,7 @@
+.demo-item{
+  text-align: center;
+}
+
+.demo-item:nth-child(2n) {
+  background: #f1f1f1;
+}

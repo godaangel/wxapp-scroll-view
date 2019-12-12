@@ -1,0 +1,13 @@
+<!-- 使用示例 -->
+<list class="list" refresh-loading="{{refreshLoading}}" loading="{{loading}}" bindrefresh="initList" bindloadmore="loadmore">
+  <block wx:for-item="parentItem" wx:for-index="parentIndex" wx:for="{{list}}" wx:key="{{parentIndex}}">
+    <!-- 【使用】这个view仅作为间隔区分展示用，并不是必须的 -->
+    <view class="demo-item" wx:for="{{parentItem}}" wx:key="{{index}}">
+      <list-item>
+        <view style="height: {{item.height}}px; line-height: {{item.height}}px">
+          高度：{{item.height}}
+        </view>
+      </list-item>
+    </view>
+  </block>
+</list>
