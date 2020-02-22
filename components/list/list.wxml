@@ -1,11 +1,13 @@
 <scroll-view 
   class="list-class" 
   scroll-y="{{true}}"
+  data-nowscrolltop="{{nowScrollTop}}"
   lower-threshold="{{lowerThreshold}}" 
   bindtouchstart="{{scroll.touchStart}}" 
   bindtouchmove="{{scroll.touchMove}}" 
   bindtouchend="{{scroll.touchEnd}}" 
-  bindscrolltolower="loadmore">
+  bindscrolltolower="loadmore"
+  bindscroll="onscroll">
   <view class="list-container" 
     change:prop="{{scroll.loadingTypeChange}}" 
     prop="{{showRefresh}}">

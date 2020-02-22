@@ -34,6 +34,8 @@ Component({
     showRefresh: false,
     //用来做主动触发刷新的标志位
     forceRefresh: false,
+    //当前滚动高度
+    nowScrollTop: 0,
   },
 
   /**
@@ -94,6 +96,12 @@ Component({
      */
     loadmore() {
       this.triggerEvent('loadmore')
+    },
+    onscroll(event) {
+      let { scrollTop } =  event.detail
+      this.setData({
+        nowScrollTop: scrollTop
+      })
     }
   }
 })
