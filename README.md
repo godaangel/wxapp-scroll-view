@@ -1,5 +1,6 @@
 # scroll-view的下拉刷新扩展组件
 > 不敢说最好，但是感觉也应该是性能和体验靠前的下拉刷新扩展了，老规矩，代码片段放最后了~
+* 2020.2.22 修复了小程序基础库v2.10.2下`scroll-view`的`touchmove`事件冲突，带来的不能滚动的问题，最新代码片段见[scroll-view-extends](https://developers.weixin.qq.com/s/kpZF5jmz7MfR)
 ## 原理
 其实原理很简单，和普通H5以及市面上有的下拉刷新没有特别大的区别，都是基于`touch`手势检测事件来实现下拉刷新的。`touchstart`的时候记录当前触摸点，`touchmove`的时候开始计算移动方向和移动距离, `touchend`的时候计算是否要进行下拉刷新操作。如图所示：
 ![](/assets/index.jpg)
@@ -63,6 +64,6 @@ module.exports = {
 > 当然，源码里面也包含了一个`list-item`组件，这个跟本文没太大关系，是用来做瀑布流长列表内容太多时的内存不足问题解决方案的，具体请看[解决小程序渲染复杂长列表，内存不足问题](https://juejin.im/post/5de8cc166fb9a0160a312404)
 
 ## 干货
-最后，上代码片段， [小程序代码片段](https://developers.weixin.qq.com/s/POCnzymR7ndV)  
+最后，上代码片段， [小程序代码片段](https://developers.weixin.qq.com/s/iO0cBkm577fY)  
 
 [github地址](https://github.com/godaangel/wxapp-scroll-view.git)
